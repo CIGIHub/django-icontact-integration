@@ -1,0 +1,16 @@
+<html>
+<body>
+{% for list in lists %}
+    <div>{{ list.name }} - {{ list.subscriptions }}</div>
+{% endfor %}
+{##}
+{#{% for subscription in subscriptions %}#}
+{#    <div>{{ subscription.list.name }} - {{ subscription.count }}</div>#}
+{#{% endfor %}#}
+
+<div>Combined Worldwide + e-Notices: {{ unique_subscriptions }}</div>
+
+<div>Combined Worldwide + e-Notices + events: {{ full_combined_count }}</div>
+
+</body>
+</html>
