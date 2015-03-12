@@ -13,7 +13,7 @@ class Migration(migrations.Migration):
         migrations.CreateModel(
             name='Account',
             fields=[
-                ('id', models.AutoField(verbose_name='ID', serialize=False, auto_created=True, primary_key=True)),
+                ('id', models.AutoField(auto_created=True, serialize=False, primary_key=True, verbose_name='ID')),
                 ('name', models.CharField(max_length=20)),
                 ('base_url', models.URLField()),
                 ('username', models.CharField(max_length=50)),
@@ -27,8 +27,8 @@ class Migration(migrations.Migration):
         migrations.CreateModel(
             name='Action',
             fields=[
-                ('id', models.AutoField(verbose_name='ID', serialize=False, auto_created=True, primary_key=True)),
-                ('action_type', models.CharField(max_length=50, null=True, blank=True)),
+                ('id', models.AutoField(auto_created=True, serialize=False, primary_key=True, verbose_name='ID')),
+                ('action_type', models.CharField(null=True, blank=True, max_length=50)),
                 ('action_time', models.CharField(max_length=50)),
                 ('actor', models.CharField(max_length=50)),
                 ('details', models.TextField(null=True, blank=True)),
@@ -40,7 +40,7 @@ class Migration(migrations.Migration):
         migrations.CreateModel(
             name='Campaign',
             fields=[
-                ('id', models.AutoField(verbose_name='ID', serialize=False, auto_created=True, primary_key=True)),
+                ('id', models.AutoField(auto_created=True, serialize=False, primary_key=True, verbose_name='ID')),
                 ('campaign_id', models.IntegerField()),
                 ('name', models.CharField(max_length=255)),
                 ('description', models.TextField(null=True, blank=True)),
@@ -51,11 +51,11 @@ class Migration(migrations.Migration):
                 ('click_track_mode', models.IntegerField(default=1)),
                 ('use_account_address', models.IntegerField(default=0)),
                 ('archive_by_default', models.IntegerField(default=1)),
-                ('street', models.CharField(max_length=1024, null=True, blank=True)),
-                ('city', models.CharField(max_length=255, null=True, blank=True)),
-                ('state', models.CharField(max_length=255, null=True, blank=True)),
-                ('zip', models.CharField(max_length=20, null=True, blank=True)),
-                ('country', models.CharField(max_length=255, null=True, blank=True)),
+                ('street', models.CharField(null=True, blank=True, max_length=1024)),
+                ('city', models.CharField(null=True, blank=True, max_length=255)),
+                ('state', models.CharField(null=True, blank=True, max_length=255)),
+                ('zip', models.CharField(null=True, blank=True, max_length=20)),
+                ('country', models.CharField(null=True, blank=True, max_length=255)),
             ],
             options={
             },
@@ -64,10 +64,10 @@ class Migration(migrations.Migration):
         migrations.CreateModel(
             name='Contact',
             fields=[
-                ('id', models.AutoField(verbose_name='ID', serialize=False, auto_created=True, primary_key=True)),
+                ('id', models.AutoField(auto_created=True, serialize=False, primary_key=True, verbose_name='ID')),
                 ('contact_id', models.CharField(max_length=50)),
-                ('first_name', models.CharField(max_length=255, null=True, blank=True)),
-                ('last_name', models.CharField(max_length=255, null=True, blank=True)),
+                ('first_name', models.CharField(null=True, blank=True, max_length=255)),
+                ('last_name', models.CharField(null=True, blank=True, max_length=255)),
                 ('email', models.EmailField(max_length=75)),
                 ('status', models.CharField(max_length=30)),
                 ('history_last_updated', models.DateTimeField(null=True, blank=True)),
@@ -79,11 +79,11 @@ class Migration(migrations.Migration):
         migrations.CreateModel(
             name='List',
             fields=[
-                ('id', models.AutoField(verbose_name='ID', serialize=False, auto_created=True, primary_key=True)),
+                ('id', models.AutoField(auto_created=True, serialize=False, primary_key=True, verbose_name='ID')),
                 ('list_id', models.IntegerField()),
                 ('name', models.CharField(max_length=255)),
                 ('description', models.TextField(null=True, blank=True)),
-                ('public_name', models.CharField(max_length=255, null=True, blank=True)),
+                ('public_name', models.CharField(null=True, blank=True, max_length=255)),
                 ('email_owner_on_change', models.IntegerField(default=1)),
                 ('welcome_on_manual_add', models.IntegerField(default=0)),
                 ('welcome_on_signup_add', models.IntegerField(default=0)),
@@ -96,16 +96,16 @@ class Migration(migrations.Migration):
         migrations.CreateModel(
             name='Message',
             fields=[
-                ('id', models.AutoField(verbose_name='ID', serialize=False, auto_created=True, primary_key=True)),
+                ('id', models.AutoField(auto_created=True, serialize=False, primary_key=True, verbose_name='ID')),
                 ('message_id', models.IntegerField()),
-                ('message_name', models.CharField(max_length=1024, null=True, blank=True)),
-                ('message_type', models.CharField(max_length=25, null=True, blank=True)),
+                ('message_name', models.CharField(null=True, blank=True, max_length=1024)),
+                ('message_type', models.CharField(null=True, blank=True, max_length=25)),
                 ('subject', models.TextField(null=True, blank=True)),
                 ('html_body', models.TextField(null=True, blank=True)),
                 ('text_body', models.TextField(null=True, blank=True)),
-                ('create_date', models.CharField(max_length=30, null=True, blank=True)),
+                ('create_date', models.CharField(null=True, blank=True, max_length=30)),
                 ('clicks_last_updated', models.DateTimeField(null=True, blank=True)),
-                ('campaign', models.ForeignKey(blank=True, to='icontact_backup.Campaign', null=True)),
+                ('campaign', models.ForeignKey(to='icontact.Campaign', null=True, blank=True)),
             ],
             options={
             },
@@ -114,12 +114,12 @@ class Migration(migrations.Migration):
         migrations.CreateModel(
             name='MessageClick',
             fields=[
-                ('id', models.AutoField(verbose_name='ID', serialize=False, auto_created=True, primary_key=True)),
+                ('id', models.AutoField(auto_created=True, serialize=False, primary_key=True, verbose_name='ID')),
                 ('unmatched_contact_id', models.IntegerField(null=True, blank=True)),
                 ('click_time', models.CharField(max_length=30)),
                 ('click_link', models.TextField()),
-                ('contact', models.ForeignKey(blank=True, to='icontact_backup.Contact', null=True)),
-                ('message', models.ForeignKey(to='icontact_backup.Message')),
+                ('contact', models.ForeignKey(to='icontact.Contact', null=True, blank=True)),
+                ('message', models.ForeignKey(to='icontact.Message')),
             ],
             options={
             },
@@ -128,7 +128,7 @@ class Migration(migrations.Migration):
         migrations.CreateModel(
             name='Offset',
             fields=[
-                ('id', models.AutoField(verbose_name='ID', serialize=False, auto_created=True, primary_key=True)),
+                ('id', models.AutoField(auto_created=True, serialize=False, primary_key=True, verbose_name='ID')),
                 ('data_type', models.CharField(max_length=25)),
                 ('offset', models.IntegerField(default=0)),
             ],
@@ -139,13 +139,13 @@ class Migration(migrations.Migration):
         migrations.CreateModel(
             name='Send',
             fields=[
-                ('id', models.AutoField(verbose_name='ID', serialize=False, auto_created=True, primary_key=True)),
+                ('id', models.AutoField(auto_created=True, serialize=False, primary_key=True, verbose_name='ID')),
                 ('send_id', models.IntegerField()),
                 ('recipient_count', models.IntegerField(null=True, blank=True)),
-                ('status', models.CharField(max_length=25, null=True, blank=True)),
-                ('released_time', models.CharField(max_length=50, null=True, blank=True)),
-                ('list', models.ForeignKey(to='icontact_backup.List')),
-                ('message', models.ForeignKey(to='icontact_backup.Message')),
+                ('status', models.CharField(null=True, blank=True, max_length=25)),
+                ('released_time', models.CharField(null=True, blank=True, max_length=50)),
+                ('list', models.ForeignKey(to='icontact.List')),
+                ('message', models.ForeignKey(to='icontact.Message')),
             ],
             options={
             },
@@ -154,11 +154,11 @@ class Migration(migrations.Migration):
         migrations.CreateModel(
             name='Subscription',
             fields=[
-                ('id', models.AutoField(verbose_name='ID', serialize=False, auto_created=True, primary_key=True)),
+                ('id', models.AutoField(auto_created=True, serialize=False, primary_key=True, verbose_name='ID')),
                 ('status', models.CharField(max_length=30)),
                 ('last_updated', models.DateTimeField(auto_now=True)),
-                ('contact', models.ForeignKey(to='icontact_backup.Contact')),
-                ('list', models.ForeignKey(to='icontact_backup.List')),
+                ('contact', models.ForeignKey(to='icontact.Contact')),
+                ('list', models.ForeignKey(to='icontact.List')),
             ],
             options={
             },
@@ -167,7 +167,7 @@ class Migration(migrations.Migration):
         migrations.AddField(
             model_name='action',
             name='contact',
-            field=models.ForeignKey(to='icontact_backup.Contact'),
+            field=models.ForeignKey(to='icontact.Contact'),
             preserve_default=True,
         ),
     ]
