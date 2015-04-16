@@ -44,7 +44,7 @@ class Campaign(models.Model):
     country = models.CharField(max_length=255, null=True, blank=True)
 
     def __unicode__(self):
-        return u'%s' % self.name
+        return u'%s - %d' % (self.name, self.campaign_id)
 
 
 class Message(models.Model):
@@ -64,9 +64,9 @@ class Message(models.Model):
 
     def __unicode__(self):
         if self.message_name:
-            return u'%s' % self.message_name
+            return u'%s - %d' % (self.message_name, self.message_id)
         else:
-            return u'%s' % self.subject
+            return u'%s - %d' % (self.subject, self.message_id)
 
 
 class MessageClick(models.Model):
