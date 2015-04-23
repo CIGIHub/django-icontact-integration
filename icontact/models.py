@@ -84,9 +84,10 @@ class Contact(models.Model):
     email = models.EmailField()
     status = models.CharField(max_length=30)
     history_last_updated = models.DateTimeField(blank=True, null=True)
+    known_internal_person = models.BooleanField(default=False)
 
     def __unicode__(self):
-        return u"%s %s" % (self.first_name, self.last_name)
+        return u"%s %s - %s" % (self.first_name, self.last_name, self.email)
 
 
 class Action(models.Model):
