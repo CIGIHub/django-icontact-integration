@@ -355,7 +355,6 @@ class Command(BaseCommand):
                                           {'limit': 10000, })
 
         json_content = response.json_content
-        total = json_content['total']
 
         count = 0
         statistics_data = json_content['statistics']
@@ -376,6 +375,3 @@ class Command(BaseCommand):
 
         message.statistics_last_updated = timezone.localtime(timezone.now())
         message.save()
-
-        if count != total:
-            print('Expected %s actions, found %s' % (total, count))
