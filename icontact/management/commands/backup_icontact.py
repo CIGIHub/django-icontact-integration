@@ -359,7 +359,7 @@ class Command(BaseCommand):
         count = 0
         statistics_data = json_content['statistics']
 
-        statistics = Statistics.objects.get_or_create(message=message)
+        statistics, created = Statistics.objects.get_or_create(message=message)
         statistics.bounces = statistics_data['bounces']
         statistics.delivered = statistics_data['delivered']
         statistics.unsubscribes = statistics_data['unsubscribes']
