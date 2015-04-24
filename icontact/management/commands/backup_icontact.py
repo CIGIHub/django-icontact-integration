@@ -170,22 +170,35 @@ class Command(BaseCommand):
         for click_data in json_content['clicks']:
             count += 1
             contact_id = click_data["contactId"]
+
             try:
                 contact = Contact.objects.get(contact_id=contact_id)
 
-                click, created = MessageClick.objects.get_or_create(
+                filter_arguments = dict(
                     contact=contact,
                     message=message,
-                    click_time=click_data['clickTime'],
-                    click_link=click_data['clickLink']
+                        click_time=click_data['clickTime'],
+                        click_link=click_data['clickLink']
                 )
             except Contact.DoesNotExist:
-                click, created = MessageClick.objects.get_or_create(
+                filter_arguments = dict(
                     unmatched_contact_id=contact_id,
-                    message=message,
-                    click_time=click_data['clickTime'],
-                    click_link=click_data['clickLink']
+                        message=message,
+                        click_time=click_data['clickTime'],
+                        click_link=click_data['clickLink']
                 )
+
+            try:
+                click, created = MessageClick.objects.get_or_create(
+                    **filter_arguments
+                )
+            except MessageClick.MultipleObjectsReturned:
+                clicks = MessageClick.objects.filter(
+                    **filter_arguments
+                )
+                click = clicks[0]
+                for extra_click in clicks[1:]:
+                    extra_click.delete()
 
             click.save()
 
@@ -272,7 +285,6 @@ class Command(BaseCommand):
         if count != total:
             print('Expected %s subscriptions, found %s' % (total, count))
 
-
     def import_history(self, contact, session):
         response = session.contact_history.get(contact.contact_id,
                                                {'limit': 10000, })
@@ -283,12 +295,24 @@ class Command(BaseCommand):
         count = 0
         for action_data in json_content['actions']:
             count += 1
-            action, created = Action.objects.get_or_create(
-                action_type=action_data['actionType'],
-                actor=action_data['actor'],
-                action_time=action_data['actionTime'],
-                contact=contact
+            try:
+                action, created = Action.objects.get_or_create(
+                    action_type=action_data['actionType'],
+                    actor=action_data['actor'],
+                    action_time=action_data['actionTime'],
+                    contact=contact
+                    )
+            except Action.MultipleObjectsReturned:
+                actions = Action.objects.filter(
+                    action_type=action_data['actionType'],
+                    actor=action_data['actor'],
+                    action_time=action_data['actionTime'],
+                    contact=contact
                 )
+                action = actions[0]
+                for extra_action in actions[1:]:
+                    extra_action.delete()
+
             action.details = action_data['details']
             action.save()
 
