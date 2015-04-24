@@ -160,7 +160,7 @@ class Command(BaseCommand):
                     message.spam_check.raw_score = spam_check_data['rawScore']
                     message.spam_check.save()
 
-                    message.spam_check.spam_check_detail_set.delete()
+                    message.spam_check.spamcheckdetail_set.all().delete()
 
                     spam_check_details_data = spam_check_data['spamDetails']
                     for detail in spam_check_details_data:
