@@ -368,7 +368,7 @@ class Command(BaseCommand):
         statistics.unique_clicks = statistics_data['clicks']['unique']
         statistics.total_clicks = statistics_data['clicks']['total']
         statistics.forwards = statistics_data['forwards']
-        statistics.comments = statistics_data['comments']
+        # statistics.comments = statistics_data['comments']
         statistics.complaints = statistics_data['complaints']
 
         statistics.save()
