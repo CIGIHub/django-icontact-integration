@@ -1,7 +1,8 @@
 from django.core.management.base import BaseCommand
 from optparse import make_option
 from icontact.models import Contact, Action, Message, \
-    MessageClick, List, Campaign, Offset, Subscription
+    MessageClick, List, Campaign, Offset, Subscription, SpamCheck, \
+    SpamCheckDetail, Statistics
 from django.utils import timezone
 from icontact.utils import establish_iContact_session
 
@@ -56,6 +57,14 @@ class Command(BaseCommand):
             lists = List.objects.all()
             for contact_list in lists:
                 self.import_subscriptions(contact_list, session)
+
+        if data_type == "statistics":
+            related_limit = int(options.get('related_limit', 1000))
+            messages = Message.objects.order_by(
+                'statistics_last_updated')[:related_limit]
+
+            for message in messages:
+                self.import_statistics(message, session)
 
     def import_lists(self, session):
 
@@ -141,6 +150,25 @@ class Command(BaseCommand):
                     message.text_body = message_data['textBody']
                     message.message_name = message_data['messageName']
                     message.create_date = message_data['createDate']
+
+                    message.save()
+
+                    if not message.spam_check:
+                        message.spam_check = SpamCheck()
+
+                    spam_check_data = message_data['spamCheck']
+                    message.spam_check.raw_score = spam_check_data['rawScore']
+                    message.spam_check.save()
+
+                    message.spam_check.spam_check_detail_set.delete()
+
+                    spam_check_details_data = spam_check_data['spamDetails']
+                    for detail in spam_check_details_data:
+                        spam_check_detail = SpamCheckDetail(spam_check=message.spam_check)
+                        spam_check_detail.score = detail['spamDetailScore']
+                        spam_check_detail.name = detail['spamDetailName']
+                        spam_check_detail.description = detail['spamDetailDescription']
+                        spam_check_detail.save()
 
                     message.save()
 
@@ -322,5 +350,32 @@ class Command(BaseCommand):
         if count != total:
             print('Expected %s actions, found %s' % (total, count))
 
+    def import_statistics(self, message, session):
+        response = session.statistics.get(message.message_id,
+                                          {'limit': 10000, })
 
+        json_content = response.json_content
+        total = json_content['total']
 
+        count = 0
+        statistics_data = json_content['statistics']
+
+        statistics = Statistics.objects.get_or_create(message=message)
+        statistics.bounces = statistics_data['bounces']
+        statistics.delivered = statistics_data['delivered']
+        statistics.unsubscribes = statistics_data['unsubscribes']
+        statistics.unique_opens = statistics_data['opens']['unique']
+        statistics.total_opens = statistics_data['opens']['total']
+        statistics.unique_clicks = statistics_data['clicks']['unique']
+        statistics.total_clicks = statistics_data['clicks']['total']
+        statistics.forwards = statistics_data['forwards']
+        statistics.comments = statistics_data['comments']
+        statistics.complaints = statistics_data['complaints']
+
+        statistics.save()
+
+        message.statistics_last_updated = timezone.localtime(timezone.now())
+        message.save()
+
+        if count != total:
+            print('Expected %s actions, found %s' % (total, count))

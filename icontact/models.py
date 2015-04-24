@@ -56,11 +56,9 @@ class Message(models.Model):
     html_body = models.TextField(null=True, blank=True)
     text_body = models.TextField(null=True, blank=True)
     create_date = models.CharField(max_length=30, null=True, blank=True)
-    # raw_score = models.FloatField()
-    # spam_detail_score = models.FloatField()
-    # spam_detail_name = models.TextField()
-    # spam_detail_description = models.TextField()
     clicks_last_updated = models.DateTimeField(blank=True, null=True)
+    statistics_last_updated = models.DateTimeField(blank=True, null=True)
+    spam_check = models.ForeignKey("SpamCheck", blank=True, null=True)
 
     def __unicode__(self):
         if self.message_name:
@@ -69,12 +67,36 @@ class Message(models.Model):
             return u'%s - %d' % (self.subject, self.message_id)
 
 
+class SpamCheck(models.Model):
+    raw_score = models.FloatField(default=0.0)
+
+    def __unicode__(self):
+        return u'%s - %f' % (self.message_set.all()[0].message_name,
+                             self.raw_score)
+
+
+class SpamCheckDetail(models.Model):
+    spam_check = models.ForeignKey("SpamCheck")
+    score = models.FloatField(default=0.0)
+    name = models.TextField(blank=True, null=True)
+    description = models.TextField(blank=True, null=True)
+
+    def __unicode__(self):
+        return u'%s - %s - %f' % (self.spam_check.message_set.all()[0].message_name,
+                                  self.name,
+                                  self.score)
+
+
 class MessageClick(models.Model):
     message = models.ForeignKey("Message")
     contact = models.ForeignKey("Contact", null=True, blank=True)
     unmatched_contact_id = models.IntegerField(null=True, blank=True)
     click_time = models.CharField(max_length=30)
-    click_link = models.TextField()
+    click_link = models.TextField(blank=True, null=True)
+
+    def __unicode__(self):
+        return u'%s - %f' % (self.message.message_name,
+                             self.contact.email)
 
 
 class Contact(models.Model):
@@ -129,3 +151,21 @@ class Subscription(models.Model):
     list = models.ForeignKey("List")
     status = models.CharField(max_length=30) # normal, pending, unsubscribed
     last_updated = models.DateTimeField(auto_now=True)
+
+
+class Statistics(models.Model):
+    message = models.ForeignKey("Message")
+    bounces = models.IntegerField(default=0)
+    delivered = models.IntegerField(default=0)
+    unsubscribes = models.IntegerField(default=0)
+    unique_opens = models.IntegerField(default=0)
+    total_opens = models.IntegerField(default=0)
+    unique_clicks = models.IntegerField(default=0)
+    total_clicks = models.IntegerField(default=0)
+    forwards = models.IntegerField(default=0)
+    comments = models.IntegerField(default=0)
+    complaints = models.IntegerField(default=0)
+
+    def __unicode__(self):
+        return u'%s - %d' % (self.message.message_name,
+                             self.unique_opens)
