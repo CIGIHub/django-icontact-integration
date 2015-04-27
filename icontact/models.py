@@ -169,3 +169,21 @@ class Statistics(models.Model):
     def __unicode__(self):
         return u'%s - %d' % (self.message.message_name,
                              self.unique_opens)
+
+    @property
+    def click_rate(self):
+        if self.delivered > 0:
+            return self.unique_clicks / self.delivered
+        return 0
+
+    @property
+    def open_rate(self):
+        if self.delivered > 0:
+            return self.unique_opens / self.delivered
+        return 0
+
+    @property
+    def bounce_rate(self):
+        if self.delivered > 0:
+            return self.bounces / self.delivered
+        return 0
