@@ -173,17 +173,17 @@ class Statistics(models.Model):
     @property
     def click_rate(self):
         if self.delivered > 0:
-            return self.unique_clicks / self.delivered
+            return self.unique_clicks / self.delivered * 100
         return 0
 
     @property
     def open_rate(self):
         if self.delivered > 0:
-            return self.unique_opens / self.delivered
+            return self.unique_opens / self.delivered * 100
         return 0
 
     @property
     def bounce_rate(self):
         if self.delivered > 0:
-            return self.bounces / self.delivered
+            return self.bounces / self.delivered * 100
         return 0
