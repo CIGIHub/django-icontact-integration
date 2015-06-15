@@ -154,7 +154,7 @@ class Command(BaseCommand):
                     message.save()
 
                     if not message.spam_check:
-                        message.spam_check = SpamCheck()
+                        message.spam_check = SpamCheck.objects.create()
 
                     spam_check_data = message_data['spamCheck']
                     message.spam_check.raw_score = spam_check_data['rawScore']
