@@ -72,8 +72,11 @@ class SpamCheck(models.Model):
     raw_score = models.FloatField(default=0.0)
 
     def __unicode__(self):
-        return u'%s - %f' % (self.message_set.all()[0].message_name,
+        if self.message_set.all():
+            return u'%s - %f' % (self.message_set.all()[0].message_name,
                              self.raw_score)
+        else:
+            return "Spam Check: %f" % self.raw_score
 
 
 class SpamCheckDetail(models.Model):
